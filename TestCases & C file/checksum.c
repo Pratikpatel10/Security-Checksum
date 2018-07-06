@@ -8,9 +8,10 @@ void readFile(char *fileName, char *checkSumSize1);
 void checkSumCalc(char *message, int checkSumSize, int messageSize, int chunkSize);
 int myPow(int base, int exponent);
 
-int main(int argc,char **argv){
+int main(int argc, char **argv){
 
 	int i;
+
 	for(i = 2; i < argc; i += 2){
 		
 		readFile(argv[i - 1], argv[i]);
@@ -33,6 +34,7 @@ void readFile(char *fileName, char *checkSumSize1){
 	ifp = fopen(fileName, "r");
 	
 	i = 0;
+
 	while((buffer = fgetc(ifp)) != EOF){
 		
 		i++;
@@ -62,6 +64,8 @@ void readFile(char *fileName, char *checkSumSize1){
 		message[i] = buffer;		
 	}	
 
+	fclose(ifp);
+
 	checkSumCalc(message, checkSumSize, messageSize, chunkSize);
 }
 
@@ -69,16 +73,11 @@ void checkSumCalc(char *message, int checkSumSize, int messageSize, int chunkSiz
 	
 	int i, j, answer = 0;
 
-	for(i = 0; i < messageSize; i++){
+	for(i = 0; i < messageSize; i += chunkSize){
 
-		for(i = 0; i < chunkSize; i++){
+		for(j = 0; j < chunkSize ; j++){
 
-			answer += (int)message[ i + j];
-
-			if(chunkSize > 0){
-
-				answer += myPow(2, (j * 4)) - 1;
-			}
+			answer += ((int)message[ i + j] * myPow(2, ((chunkSize - j - 1) * 8)));
 		}
 	}
 	
@@ -107,16 +106,24 @@ void checkSumCalc(char *message, int checkSumSize, int messageSize, int chunkSiz
 	}
 	printf("\n");
 
-	printf("checkSumSize: %d\n", checkSumSize);
-	printf("messageSize: %d\n", messageSize);
-	printf("ANSWER: %d\n", answer);
+	printf("%d checksum is\t%x for all\t%d chars\n",checkSumSize, answer, messageSize );
 }
 
 int myPow(int base, int exponent){
 
-	if(exponent == 0)
-		return 1;
+	int m;
 
-	return (base * myPow(base, exponent - 1));
+	if(exponent == 0){
+		return 1;
+	}
+
+	if (exponent % 2 == 0) {
+        m = myPow(base, exponent / 2);
+        return m * m;
+    }
+
+    else{
+    	return (base * myPow(base, exponent - 1));
+    }	
 }	
 	
