@@ -106,7 +106,7 @@ void checkSumCalc(char *message, int checkSumSize, int messageSize, int chunkSiz
 	}
 	printf("\n");
 
-	printf("%d checksum is\t%x for all\t%d chars\n",checkSumSize, answer, messageSize );
+	printf("%2d bit checksum is %8lx for all %4d chars\n",checkSumSize,(unsigned long int)answer,messageSize);
 }
 
 int myPow(int base, int exponent){
@@ -125,5 +125,4 @@ int myPow(int base, int exponent){
     else{
     	return (base * myPow(base, exponent - 1));
     }	
-}	
-	
+}		
