@@ -44,9 +44,12 @@ void readFile(char *fileName, char *checkSumSize1){
 
 	chunkSize = (checkSumSize / 8);
 
-	padding = (messageSize % chunkSize);
-	messageSize = messageSize + padding ;
+	if((padding = (messageSize % chunkSize)) != 0){
 
+		padding = chunkSize - padding;
+	}
+
+	messageSize = messageSize + padding ;
 	message = malloc((messageSize + 1) * sizeof (char));
 	message[messageSize] = '\0';
 
@@ -71,42 +74,46 @@ void readFile(char *fileName, char *checkSumSize1){
 
 void checkSumCalc(char *message, int checkSumSize, int messageSize, int chunkSize){
 	
-	int i, j, answer = 0;
+	int i, j;
+	unsigned long int answer = 0;
 
 	for(i = 0; i < messageSize; i += chunkSize){
 
 		for(j = 0; j < chunkSize ; j++){
 
-			answer += ((int)message[ i + j] * myPow(2, ((chunkSize - j - 1) * 8)));
+			answer += (unsigned long int)message[ i + j] * myPow(2, ((chunkSize - j - 1) * 8));
 		}
 	}
 	
 	switch(checkSumSize){
 
 		case 8:
-			answer = answer & 0xFF;
+			answer = answer & 0xff;
 		break;
 
 		case 16:
-			answer = answer & 0xFFFF;
+			answer = answer & 0xffff;
 		break;
 
 		case 32:
-			answer = answer & 0xFFFFFFFF;
+			answer = answer & 0xffffffff;
 		break;
 	}
 
+	printf("\n");
 	for(i = 0; i < messageSize; i++){
 
-		if((i == 0) || ((i + 1) % 80 == 0)){
+		printf("%c", message[i]);
+
+		if((i + 1) % 80 == 0){
 			
 			printf("\n");
 		}
-		printf("%c", message[i]);
+		
 	}
 	printf("\n");
 
-	printf("%2d bit checksum is %8lx for all %4d chars\n",checkSumSize,(unsigned long int)answer,messageSize);
+	printf("%2d bit checksum is %8lx for all %4d chars\n",checkSumSize, answer, messageSize);
 }
 
 int myPow(int base, int exponent){
