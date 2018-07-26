@@ -1,4 +1,6 @@
-//Steve Louis 
+// Steve Louis 
+// CIS 3360 Checksum
+// 7/27/2018
 
 # include<stdlib.h>
 # include<stdio.h>
